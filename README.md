@@ -74,7 +74,9 @@ The `seed.js` script provisions the following accounts. All default passwords fo
 
 ## 📸 Screenshots
 
-*(You can add screenshots of your UI here. E.g., Dashboard, MFA Setup, Chat Interface, Employee Directory)*
+<img width="1920" height="911" alt="image" src="https://github.com/user-attachments/assets/7d0e2501-13a2-4857-bd2f-bc392737ee86" />
+
+<img width="1920" height="911" alt="image" src="https://github.com/user-attachments/assets/5c4fd9a2-3cb8-4e51-bb16-89de6b2c66e5" />
 
 ## 🛡️ Security Implementations
 
