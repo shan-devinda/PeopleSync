@@ -1,0 +1,119 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id                   String    @id @default(uuid())
+  email                String    @unique
+  password             String
+  role                 String    @default("employee")
+  firstName            String
+  lastName             String
+  dept                 String    @default("Unassigned")
+  jobTitle             String    @default("Employee")
+  phone                String?
+  emergencyContact     String?
+  address              String?
+  dateOfBirth          String?
+  dateJoined           String?
+  status               String    @default("active")
+  avatar               String?
+  education            String?
+  qualifications       String?
+  certifications       String?
+  certExpiryDate       String?
+  workExperience       String?
+  skills               String?
+  languages            String?
+  failedLoginAttempts  Int       @default(0)
+  lockedUntil          DateTime?
+  mfaEnabled           Boolean   @default(false)
+  lastLogin            DateTime?
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+
+  auditLogs            AuditLog[]
+  sentMessages         Message[]      @relation("SentMessages")
+  assignedTasks        Task[]         @relation("AssignedTasks")
+  createdTasks         Task[]         @relation("CreatedTasks")
+  changeRequests       ChangeRequest[]
+  notifications        Notification[]
+}
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  type       String
+  details    String
+  ipAddress  String?
+  userAgent  String?
+  userId     String?
+  user       User?    @relation(fields: [userId], references: [id])
+  createdAt  DateTime @default(now())
+}
+
+model Event {
+  id          String   @id @default(uuid())
+  title       String
+  type        String
+  date        String
+  description String?
+  createdBy   String?
+  createdAt   DateTime @default(now())
+}
+
+model Message {
+  id        String   @id @default(uuid())
+  content   String
+  channel   String
+  senderId  String
+  sender    User     @relation("SentMessages", fields: [senderId], references: [id])
+  fileUrl   String?
+  fileType  String?
+  createdAt DateTime @default(now())
+}
+
+model Task {
+  id           String    @id @default(uuid())
+  title        String
+  description  String?
+  status       String    @default("pending")
+  priority     String    @default("medium")
+  deadline     String?
+  assignedToId String
+  assignedTo   User      @relation("AssignedTasks", fields: [assignedToId], references: [id])
+  createdById  String
+  createdBy    User      @relation("CreatedTasks", fields: [createdById], references: [id])
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+}
+
+model ChangeRequest {
+  id         String   @id @default(uuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+  fieldName  String
+  fieldLabel String
+  oldValue   String?
+  newValue   String
+  status     String   @default("pending")
+  reviewedBy String?
+  reviewNote String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  title     String
+  message   String
+  type      String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+}

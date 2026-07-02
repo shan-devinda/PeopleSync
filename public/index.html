@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PeopleSync Secure HR ERP</title>
+    <meta name="description" content="Secure HR Enterprise Resource Planning System">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app-shell">
+
+    <!-- ── Sidebar ─────────────────────────────────────────────────────── -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+            <div class="brand-icon"><i class="ph-fill ph-users-three"></i></div>
+            <div><div class="brand-name">PeopleSync</div><div class="brand-sub">HR ERP Platform</div></div>
+        </div>
+        <div class="sidebar-user">
+            <div class="sidebar-user-inner">
+                <img src="" alt="User" class="avatar" id="sidebarAvatar">
+                <div>
+                    <div class="sidebar-user-name" id="sidebarName">Loading...</div>
+                    <div class="sidebar-user-role" id="sidebarRole">—</div>
+                </div>
+            </div>
+        </div>
+        <nav class="sidebar-nav" id="sidebarNav">
+            <div class="nav-section-label">Main</div>
+            <div class="nav-item active" data-view="dashboard"><i class="ph ph-squares-four"></i> Dashboard</div>
+            <div class="nav-item" data-view="employees"><i class="ph ph-users"></i> Employees</div>
+            <div class="nav-item hr-only" data-view="approvals"><i class="ph ph-check-circle"></i> Approvals <span class="nav-badge" id="approvalBadge" style="display:none"></span></div>
+            <div class="nav-section-label">Workspace</div>
+            <div class="nav-item" data-view="tasks"><i class="ph ph-clipboard-text"></i> My Tasks</div>
+            <div class="nav-item" data-view="calendar"><i class="ph ph-calendar-blank"></i> Calendar</div>
+            <div class="nav-item" data-view="chat"><i class="ph ph-chats"></i> Communication</div>
+            <div class="nav-section-label">Administration</div>
+            <div class="nav-item admin-only" data-view="reports"><i class="ph ph-chart-pie-slice"></i> Reports & Analytics</div>
+            <div class="nav-item audit-only" data-view="audit"><i class="ph ph-shield-check"></i> Audit Logs</div>
+            <div class="nav-item" data-view="selfservice"><i class="ph ph-user-circle"></i> My Profile</div>
+            <div class="nav-item" data-view="settings"><i class="ph ph-gear"></i> Settings</div>
+        </nav>
+        <div class="sidebar-footer">
+            <div class="nav-item" id="logoutBtn" style="color:var(--danger)"><i class="ph ph-sign-out"></i> Secure Sign Out</div>
+        </div>
+    </aside>
+
+    <!-- ── Main ────────────────────────────────────────────────────────── -->
+    <div class="main-content">
+        <header class="top-header">
+            <div class="header-left">
+                <button class="mobile-menu-btn" id="mobileMenuBtn"><i class="ph ph-list"></i></button>
+                <div class="search-bar">
+                    <i class="ph ph-magnifying-glass"></i>
+                    <input type="text" id="globalSearch" placeholder="Search employees, tasks, events...">
+                </div>
+            </div>
+            <div class="header-right">
+                <div style="position:relative">
+                    <button class="header-icon-btn" id="notifBtn" title="Notifications">
+                        <i class="ph ph-bell"></i>
+                        <span class="notif-count" id="notifCount" style="display:none">0</span>
+                    </button>
+                    <div class="notif-dropdown" id="notifDropdown">
+                        <div class="notif-header">
+                            <span>Notifications</span>
+                            <button class="text-btn" id="markAllReadBtn">Mark all read</button>
+                        </div>
+                        <div id="notifList"><div class="notif-empty">No notifications</div></div>
+                        <div class="notif-footer"></div>
+                    </div>
+                </div>
+                <div class="header-avatar-wrap" id="headerUserWrap">
+                    <img src="" alt="User" class="avatar" id="headerAvatar" style="width:34px;height:34px;">
+                    <div>
+                        <div class="header-user-name" id="headerName">—</div>
+                        <div class="header-user-role" id="headerRole">—</div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- ── Views ───────────────────────────────────────────────────── -->
+        <div class="view-container">
+
+            <!-- DASHBOARD -->
+            <div class="view active" id="view-dashboard">
+                <div class="page-header flex-between">
+                    <div><h1>Dashboard</h1><p>Welcome back. Here's your HR operations overview.</p></div>
+                </div>
+                <div class="stats-grid" id="dashStats">
+                    <div class="stat-card"><div class="stat-icon purple"><i class="ph ph-users-three"></i></div><div><div class="stat-value" id="stat-total">—</div><div class="stat-label">Total Employees</div></div></div>
+                    <div class="stat-card"><div class="stat-icon green"><i class="ph ph-check-circle"></i></div><div><div class="stat-value" id="stat-active">—</div><div class="stat-label">Active</div></div></div>
+                    <div class="stat-card"><div class="stat-icon orange"><i class="ph ph-clock"></i></div><div><div class="stat-value" id="stat-pending">—</div><div class="stat-label">Pending Approvals</div></div></div>
+                    <div class="stat-card"><div class="stat-icon cyan"><i class="ph ph-clipboard-text"></i></div><div><div class="stat-value" id="stat-tasks">—</div><div class="stat-label">Open Tasks</div></div></div>
+                </div>
+                <div class="bento-grid">
+                    <div class="card">
+                        <div class="card-header"><h2>Recent Activity</h2></div>
+                        <div id="dashActivity"></div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header"><h2>Upcoming Events</h2></div>
+                        <div id="dashEvents"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- EMPLOYEES -->
+            <div class="view" id="view-employees">
+                <div class="page-header flex-between">
+                    <div><h1>Employee Directory</h1><p>Manage and view organizational personnel records.</p></div>
+                    <button class="btn btn-primary hr-only" id="addEmpBtn"><i class="ph ph-plus"></i> Add Employee</button>
+                </div>
+                <div class="card">
+                    <div class="table-controls">
+                        <input type="text" class="search-input" id="empSearch" placeholder="Search name, email...">
+                        <select class="modern-select" id="deptFilter"><option value="">All Departments</option></select>
+                        <select class="modern-select" id="statusFilter"><option value="">All Status</option><option value="active">Active</option><option value="leave">On Leave</option><option value="archived">Archived</option></select>
+                        <button class="btn btn-secondary btn-sm" id="exportBtn"><i class="ph ph-export"></i> Export CSV</button>
+                    </div>
+                    <div class="table-wrap">
+                        <table class="data-table">
+                            <thead><tr><th>Employee</th><th>Role & Department</th><th>Contact</th><th>Status</th><th>Actions</th></tr></thead>
+                            <tbody id="empTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- APPROVALS -->
+            <div class="view" id="view-approvals">
+                <div class="page-header"><h1>Pending Approvals</h1><p>Review and authorize employee profile change requests.</p></div>
+                <div class="card">
+                    <div class="table-controls">
+                        <select class="modern-select" id="approvalStatusFilter"><option value="pending">Pending</option><option value="approved">Approved</option><option value="denied">Denied</option><option value="">All</option></select>
+                    </div>
+                    <div class="table-wrap">
+                        <table class="data-table">
+                            <thead><tr><th>Employee</th><th>Field</th><th>New Value</th><th>Submitted</th><th>Status</th><th>Actions</th></tr></thead>
+                            <tbody id="approvalTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TASKS -->
+            <div class="view" id="view-tasks">
+                <div class="page-header flex-between">
+                    <div><h1>Task Management</h1><p>Track assigned tasks, priorities, and deadlines.</p></div>
+                    <button class="btn btn-primary manager-only" id="addTaskBtn"><i class="ph ph-plus"></i> Assign Task</button>
+                </div>
+                <div class="card">
+                    <div class="table-controls">
+                        <select class="modern-select" id="taskStatusFilter"><option value="">All Status</option><option value="pending">Pending</option><option value="in_progress">In Progress</option><option value="completed">Completed</option></select>
+                        <select class="modern-select" id="taskPriorityFilter"><option value="">All Priority</option><option value="high">High</option><option value="medium">Medium</option><option value="low">Low</option></select>
+                    </div>
+                    <div class="table-wrap">
+                        <table class="data-table">
+                            <thead><tr><th>Task</th><th>Assigned To</th><th>Priority</th><th>Deadline</th><th>Status</th><th>Actions</th></tr></thead>
+                            <tbody id="taskTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CALENDAR -->
+            <div class="view" id="view-calendar">
+                <div class="page-header flex-between">
+                    <div><h1>Company Calendar</h1><p>Events, birthdays, holidays, and training sessions.</p></div>
+                    <button class="btn btn-primary hr-only" id="addEventBtn"><i class="ph ph-calendar-plus"></i> Add Event</button>
+                </div>
+                <div class="card">
+                    <div class="calendar-header">
+                        <button class="btn btn-secondary btn-sm" id="calPrev"><i class="ph ph-caret-left"></i></button>
+                        <h2 id="calMonthLabel"></h2>
+                        <button class="btn btn-secondary btn-sm" id="calNext"><i class="ph ph-caret-right"></i></button>
+                    </div>
+                    <div class="cal-grid-header">
+                        <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
+                    </div>
+                    <div class="cal-grid" id="calGrid"></div>
+                </div>
+                <div style="display:flex;gap:12px;margin-top:12px;flex-wrap:wrap;">
+                    <span style="font-size:0.75rem;display:flex;align-items:center;gap:5px;"><span class="event-dot birthday"></span>Birthday</span>
+                    <span style="font-size:0.75rem;display:flex;align-items:center;gap:5px;"><span class="event-dot company"></span>Company Event</span>
+                    <span style="font-size:0.75rem;display:flex;align-items:center;gap:5px;"><span class="event-dot holiday"></span>Holiday</span>
+                    <span style="font-size:0.75rem;display:flex;align-items:center;gap:5px;"><span class="event-dot training"></span>Training</span>
+                    <span style="font-size:0.75rem;display:flex;align-items:center;gap:5px;"><span class="event-dot meeting"></span>Meeting</span>
+                </div>
+            </div>
+
+            <!-- COMMUNICATION -->
+            <div class="view" id="view-chat">
+                <div class="page-header"><h1>Department Communication</h1><p>Real-time team messaging and collaboration.</p></div>
+                <div class="card" style="padding:0;overflow:hidden;">
+                    <div class="chat-layout">
+                        <div class="chat-sidebar">
+                            <h4>Channels</h4>
+                            <div class="chat-channel active" data-channel="engineering"><i class="ph ph-hash"></i> engineering</div>
+                            <div class="chat-channel" data-channel="hr-announcements"><i class="ph ph-hash"></i> hr-announcements</div>
+                            <div class="chat-channel" data-channel="general"><i class="ph ph-hash"></i> general</div>
+                            <div class="chat-channel" data-channel="leadership"><i class="ph ph-hash"></i> leadership</div>
+                            <h4>Direct Messages</h4>
+                            <div id="dmList"></div>
+                        </div>
+                        <div class="chat-main">
+                            <div class="chat-topbar">
+                                <div><h3 id="chatChannelName"># engineering</h3><span style="font-size:0.75rem;color:var(--text-muted)">End-to-end encrypted</span></div>
+                            </div>
+                            <div class="chat-messages" id="chatMessages"></div>
+                            <div class="chat-input-area">
+                                <button class="btn btn-secondary btn-icon" title="Attach file"><i class="ph ph-paperclip"></i></button>
+                                <input type="text" class="chat-input" id="chatInput" placeholder="Message #engineering (encrypted)...">
+                                <button class="btn btn-primary btn-icon" id="chatSendBtn"><i class="ph ph-paper-plane-right"></i></button>
+                            </div>
+                        </div>
+                        <div class="tasks-panel">
+                            <h4>Active Tasks</h4>
+                            <div id="sideTaskList"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- REPORTS -->
+            <div class="view" id="view-reports">
+                <div class="page-header flex-between">
+                    <div><h1>Reports & Analytics</h1><p>HR insights and strategic decision-making data.</p></div>
+                    <button class="btn btn-secondary" onclick="window.print()"><i class="ph ph-printer"></i> Print</button>
+                </div>
+                <div class="stats-grid" id="reportStats"></div>
+                <div class="bento-grid" style="margin-top:16px;">
+                    <div class="card">
+                        <div class="card-header"><h2><i class="ph ph-chart-bar" style="color:var(--accent)"></i> Department Distribution</h2></div>
+                        <div class="card-body">
+                            <div class="bar-chart" id="deptChart"></div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header"><h2><i class="ph ph-shield-check" style="color:var(--success)"></i> Authentication Events</h2></div>
+                        <div class="card-body" id="authChart"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AUDIT LOGS -->
+            <div class="view" id="view-audit">
+                <div class="page-header"><h1>Audit Logs</h1><p>Immutable activity log for compliance and incident investigation.</p></div>
+                <div class="card">
+                    <div class="table-controls">
+                        <select class="modern-select" id="auditTypeFilter">
+                            <option value="">All Types</option>
+                            <option value="AUTH_SUCCESS">Auth Success</option>
+                            <option value="AUTH_FAILED">Auth Failed</option>
+                            <option value="PROFILE_UPDATED">Profile Updated</option>
+                            <option value="EMPLOYEE_CREATED">Employee Created</option>
+                            <option value="APPROVAL_APPROVED">Approval Approved</option>
+                            <option value="APPROVAL_DENIED">Approval Denied</option>
+                            <option value="TASK_ASSIGNED">Task Assigned</option>
+                            <option value="PASSWORD_CHANGE">Password Change</option>
+                        </select>
+                    </div>
+                    <div class="table-wrap">
+                        <table class="data-table">
+                            <thead><tr><th>Timestamp</th><th>Event Type</th><th>User</th><th>IP Address</th><th>Details</th></tr></thead>
+                            <tbody id="auditTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SELF SERVICE -->
+            <div class="view" id="view-selfservice">
+                <div class="page-header"><h1>My Profile</h1><p>View your information and submit change requests for HR review.</p></div>
+                <div class="bento-grid">
+                    <div class="card">
+                        <div class="card-header"><h2>Profile Information</h2><button class="btn btn-primary btn-sm" id="editMyProfileBtn"><i class="ph ph-pencil"></i> Edit Allowed Fields</button></div>
+                        <div class="card-body" id="myProfileInfo"></div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header"><h2>My Change Requests</h2></div>
+                        <div class="card-body" style="padding:0;">
+                            <div class="table-wrap">
+                                <table class="data-table">
+                                    <thead><tr><th>Field</th><th>New Value</th><th>Status</th><th>Date</th></tr></thead>
+                                    <tbody id="myRequestsBody"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SETTINGS -->
+            <div class="view" id="view-settings">
+                <div class="page-header"><h1>Settings</h1><p>Account security and preferences.</p></div>
+                <div class="bento-grid">
+                    <div class="card">
+                        <div class="card-header"><h2><i class="ph ph-lock-key" style="color:var(--accent)"></i> Change Password</h2></div>
+                        <div class="card-body">
+                            <form id="changePwdForm" style="display:flex;flex-direction:column;gap:12px;">
+                                <div class="form-group"><label class="form-label">Current Password</label><input type="password" class="form-input" id="currentPwd" placeholder="••••••••"></div>
+                                <div class="form-group"><label class="form-label">New Password</label><input type="password" class="form-input" id="newPwd" placeholder="Min. 8 characters"></div>
+                                <div class="form-group"><label class="form-label">Confirm New Password</label><input type="password" class="form-input" id="confirmPwd" placeholder="Repeat new password"></div>
+                                <button type="submit" class="btn btn-primary" style="align-self:flex-start"><i class="ph ph-check"></i> Update Password</button>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header"><h2><i class="ph ph-shield-check" style="color:var(--success)"></i> Multi-Factor Authentication</h2></div>
+                        <div class="card-body">
+                            <p style="font-size:0.85rem;color:var(--text-secondary);margin-bottom:16px;">Protect your account with TOTP-based multi-factor authentication.</p>
+                            <div style="background:var(--bg-hover);border-radius:10px;padding:14px;margin-bottom:16px;font-size:0.82rem;display:flex;align-items:center;gap:10px;">
+                                <i class="ph ph-device-mobile" style="font-size:1.3rem;color:var(--accent)"></i>
+                                <div>MFA Status: <strong id="mfaStatusText" style="color:var(--warning)">Disabled</strong></div>
+                            </div>
+                            <button class="btn btn-primary btn-sm" id="toggleMfaBtn"><i class="ph ph-qr-code"></i> Enable MFA</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div><!-- /view-container -->
+    </div><!-- /main-content -->
+</div><!-- /app-shell -->
+
+<!-- ── Toast Container ──────────────────────────────────────────────────── -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- ── Employee Modal ───────────────────────────────────────────────────── -->
+<div class="modal-overlay" id="empModal">
+    <div class="modal">
+        <div class="modal-header">
+            <span class="modal-title" id="empModalTitle">Employee Record</span>
+            <button class="modal-close" data-close="empModal"><i class="ph ph-x"></i></button>
+        </div>
+        <div class="modal-tabs" id="empModalTabs">
+            <button class="modal-tab active" data-tab="tab-personal">Personal</button>
+            <button class="modal-tab" data-tab="tab-skills">Skills & Edu</button>
+            <button class="modal-tab" data-tab="tab-docs">Documents</button>
+        </div>
+        <div class="modal-body">
+            <div class="security-alert"><i class="ph ph-warning-circle"></i><span>Core profile changes require HR approval before taking effect. All documents are AES-256 encrypted.</span></div>
+
+            <div id="tab-personal" class="modal-tab-content">
+                <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;">
+                    <img src="" class="avatar avatar-xl" id="empModalAvatar">
+                    <div>
+                        <div style="font-size:1.1rem;font-weight:600;" id="empModalFullName">—</div>
+                        <div style="font-size:0.82rem;color:var(--text-secondary);" id="empModalJobTitle">—</div>
+                    </div>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group"><label class="form-label">First Name</label><input type="text" class="form-input locked" id="ef-firstName" disabled></div>
+                    <div class="form-group"><label class="form-label">Last Name</label><input type="text" class="form-input locked" id="ef-lastName" disabled></div>
+                    <div class="form-group"><label class="form-label">Email</label><input type="email" class="form-input locked" id="ef-email" disabled></div>
+                    <div class="form-group"><label class="form-label">Phone</label><input type="text" class="form-input" id="ef-phone"></div>
+                    <div class="form-group"><label class="form-label">Department</label>
+                        <select class="form-input" id="ef-dept">
+                            <option>Engineering</option><option>Human Resources</option><option>Marketing</option><option>Design</option><option>Sales</option><option>Finance</option><option>Operations</option><option>Compliance</option><option>Executive</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label class="form-label">Job Title</label><input type="text" class="form-input" id="ef-jobTitle"></div>
+                    <div class="form-group"><label class="form-label">Date of Birth</label><input type="date" class="form-input" id="ef-dateOfBirth"></div>
+                    <div class="form-group"><label class="form-label">Date Joined</label><input type="date" class="form-input" id="ef-dateJoined"></div>
+                    <div class="form-group full"><label class="form-label">Emergency Contact</label><input type="text" class="form-input" id="ef-emergencyContact" placeholder="Name — Phone Number"></div>
+                    <div class="form-group full"><label class="form-label">Address</label><input type="text" class="form-input" id="ef-address"></div>
+                    <div class="form-group"><label class="form-label">Role</label>
+                        <select class="form-input" id="ef-role">
+                            <option value="admin">Super Administrator</option>
+                            <option value="hr_manager">HR Manager</option>
+                            <option value="hr_officer">HR Officer</option>
+                            <option value="dept_manager">Department Manager</option>
+                            <option value="team_leader">Team Leader</option>
+                            <option value="employee">Employee</option>
+                            <option value="auditor">Auditor</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label class="form-label">Status</label>
+                        <select class="form-input" id="ef-status"><option value="active">Active</option><option value="leave">On Leave</option><option value="archived">Archived</option></select>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-skills" class="modal-tab-content" style="display:none;">
+                <div class="form-grid">
+                    <div class="form-group full"><label class="form-label">Education Background</label><textarea class="form-input" id="ef-education" rows="3"></textarea></div>
+                    <div class="form-group full"><label class="form-label">Qualifications</label><textarea class="form-input" id="ef-qualifications" rows="3"></textarea></div>
+                    <div class="form-group"><label class="form-label">Certifications</label><textarea class="form-input" id="ef-certifications" rows="3"></textarea></div>
+                    <div class="form-group"><label class="form-label">Cert Expiry Date</label><input type="date" class="form-input" id="ef-certExpiryDate"></div>
+                    <div class="form-group full"><label class="form-label">Work Experience</label><textarea class="form-input" id="ef-workExperience" rows="4"></textarea></div>
+                    <div class="form-group"><label class="form-label">Technical Skills</label><input type="text" class="form-input" id="ef-skills" placeholder="e.g. Node.js, AWS, Docker"></div>
+                    <div class="form-group"><label class="form-label">Language Proficiency</label><input type="text" class="form-input" id="ef-languages" placeholder="e.g. English (Native), Spanish (B2)"></div>
+                </div>
+            </div>
+
+            <div id="tab-docs" class="modal-tab-content" style="display:none;">
+                <div id="docList">
+                    <div class="doc-item"><i class="ph ph-file-pdf"></i><span class="doc-name">Employment_Contract.pdf</span><span class="doc-badge"><i class="ph ph-lock-key"></i> Encrypted</span><button class="btn btn-secondary btn-sm"><i class="ph ph-download-simple"></i></button></div>
+                    <div class="doc-item"><i class="ph ph-file-pdf"></i><span class="doc-name">Identity_Verification.pdf</span><span class="doc-badge"><i class="ph ph-lock-key"></i> Encrypted</span><button class="btn btn-secondary btn-sm"><i class="ph ph-download-simple"></i></button></div>
+                </div>
+                <div class="upload-zone" style="margin-top:16px;" onclick="document.getElementById('fileUpload').click()">
+                    <i class="ph ph-upload-simple"></i>
+                    <p>Click to upload document</p>
+                    <span style="font-size:0.75rem;">Files scanned and AES-256 encrypted before storage</span>
+                    <input type="file" id="fileUpload" style="display:none" accept=".pdf,.doc,.docx,.jpg,.png">
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" data-close="empModal">Cancel</button>
+            <button class="btn btn-primary" id="saveEmpBtn">Save Changes</button>
+        </div>
+    </div>
+</div>
+
+<!-- ── Add Task Modal ────────────────────────────────────────────────────── -->
+<div class="modal-overlay" id="taskModal">
+    <div class="modal" style="max-width:480px;">
+        <div class="modal-header"><span class="modal-title">Assign New Task</span><button class="modal-close" data-close="taskModal"><i class="ph ph-x"></i></button></div>
+        <div class="modal-body">
+            <div class="form-grid">
+                <div class="form-group full"><label class="form-label">Task Title *</label><input type="text" class="form-input" id="tf-title" placeholder="Enter task title"></div>
+                <div class="form-group full"><label class="form-label">Description</label><textarea class="form-input" id="tf-description" rows="3" placeholder="Task details..."></textarea></div>
+                <div class="form-group"><label class="form-label">Assign To *</label><select class="form-input" id="tf-assignedTo"></select></div>
+                <div class="form-group"><label class="form-label">Priority</label><select class="form-input" id="tf-priority"><option value="low">Low</option><option value="medium" selected>Medium</option><option value="high">High</option></select></div>
+                <div class="form-group full"><label class="form-label">Deadline</label><input type="date" class="form-input" id="tf-deadline"></div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" data-close="taskModal">Cancel</button>
+            <button class="btn btn-primary" id="saveTaskBtn"><i class="ph ph-check"></i> Assign Task</button>
+        </div>
+    </div>
+</div>
+
+<!-- ── Add Event Modal ───────────────────────────────────────────────────── -->
+<div class="modal-overlay" id="eventModal">
+    <div class="modal" style="max-width:440px;">
+        <div class="modal-header"><span class="modal-title">Add Calendar Event</span><button class="modal-close" data-close="eventModal"><i class="ph ph-x"></i></button></div>
+        <div class="modal-body">
+            <div class="form-grid">
+                <div class="form-group full"><label class="form-label">Event Title *</label><input type="text" class="form-input" id="evf-title"></div>
+                <div class="form-group"><label class="form-label">Type</label><select class="form-input" id="evf-type"><option value="company">Company Event</option><option value="holiday">Holiday</option><option value="training">Training</option><option value="meeting">Meeting</option></select></div>
+                <div class="form-group"><label class="form-label">Date *</label><input type="date" class="form-input" id="evf-date"></div>
+                <div class="form-group full"><label class="form-label">Description</label><textarea class="form-input" id="evf-description" rows="2"></textarea></div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" data-close="eventModal">Cancel</button>
+            <button class="btn btn-primary" id="saveEventBtn"><i class="ph ph-check"></i> Add Event</button>
+        </div>
+    </div>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PeopleSync ERP — Secure Login</title>
+    <meta name="description" content="Secure login portal for PeopleSync HR ERP System">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --bg: #020617;
+            --card: rgba(15,23,42,0.85);
+            --border: rgba(99,102,241,0.2);
+            --accent: #6366f1;
+            --accent2: #8b5cf6;
+            --text: #f1f5f9;
+            --muted: #94a3b8;
+            --danger: #ef4444;
+            --success: #22c55e;
+            --input-bg: rgba(30,41,59,0.8);
+        }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .bg-orb { position: fixed; border-radius: 50%; filter: blur(80px); pointer-events: none; z-index: 0; }
+        .bg-orb-1 { width: 500px; height: 500px; background: rgba(99,102,241,0.15); top: -100px; left: -100px; }
+        .bg-orb-2 { width: 400px; height: 400px; background: rgba(139,92,246,0.1); bottom: -100px; right: -100px; }
+        .login-wrapper { position: relative; z-index: 1; width: 100%; max-width: 440px; padding: 24px; }
+        .brand { text-align: center; margin-bottom: 32px; }
+        .brand-icon { width: 56px; height: 56px; background: linear-gradient(135deg, var(--accent), var(--accent2)); border-radius: 16px; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; font-size: 1.8rem; box-shadow: 0 0 40px rgba(99,102,241,0.4); }
+        .brand h1 { font-size: 1.6rem; font-weight: 700; background: linear-gradient(135deg, #e0e7ff, #c7d2fe); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .brand p { color: var(--muted); font-size: 0.85rem; margin-top: 4px; }
+        .card { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 32px; backdrop-filter: blur(20px); box-shadow: 0 25px 50px rgba(0,0,0,0.5); }
+        .screen { display: none; }
+        .screen.active { display: block; animation: fadeSlideIn 0.3s ease; }
+        @keyframes fadeSlideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .screen-title { font-size: 1.2rem; font-weight: 600; margin-bottom: 6px; }
+        .screen-subtitle { color: var(--muted); font-size: 0.85rem; margin-bottom: 24px; }
+        .form-group { margin-bottom: 16px; }
+        label { display: block; font-size: 0.8rem; font-weight: 500; color: var(--muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.05em; }
+        .input-wrap { position: relative; }
+        .input-wrap i { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 1rem; pointer-events: none; }
+        input[type="email"], input[type="password"], input[type="text"] { width: 100%; padding: 12px 12px 12px 38px; background: var(--input-bg); border: 1px solid var(--border); border-radius: 10px; color: var(--text); font-size: 0.9rem; font-family: 'Inter', sans-serif; outline: none; transition: border-color 0.2s; }
+        input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(99,102,241,0.15); }
+        .captcha-box { display: flex; align-items: center; justify-content: space-between; background: var(--input-bg); border: 1px solid var(--border); border-radius: 10px; padding: 12px 16px; margin-bottom: 16px; cursor: pointer; transition: border-color 0.2s; user-select: none; }
+        .captcha-box:hover { border-color: var(--accent); }
+        .captcha-check { display: flex; align-items: center; gap: 10px; font-size: 0.9rem; }
+        .captcha-check input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; accent-color: var(--accent); }
+        .captcha-logo { font-size: 1.5rem; color: var(--muted); }
+        .btn { width: 100%; padding: 13px; border: none; border-radius: 10px; font-size: 0.95rem; font-weight: 600; font-family: 'Inter', sans-serif; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-primary { background: linear-gradient(135deg, var(--accent), var(--accent2)); color: white; box-shadow: 0 4px 20px rgba(99,102,241,0.4); }
+        .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 30px rgba(99,102,241,0.5); }
+        .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+        .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--muted); margin-top: 10px; }
+        .btn-outline:hover { border-color: var(--accent); color: var(--text); }
+        .error-msg { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); border-radius: 8px; padding: 10px 14px; font-size: 0.83rem; color: #fca5a5; margin-bottom: 14px; display: none; }
+        .error-msg.show { display: flex; align-items: center; gap: 8px; }
+        .mfa-inputs { display: flex; gap: 8px; justify-content: center; margin: 24px 0; }
+        .mfa-inputs input { width: 44px; height: 52px; text-align: center; font-size: 1.3rem; font-weight: 700; padding: 0; border-radius: 10px; }
+        .security-badges { display: flex; gap: 12px; justify-content: center; margin-top: 20px; flex-wrap: wrap; }
+        .badge-item { display: flex; align-items: center; gap: 5px; font-size: 0.75rem; color: var(--muted); }
+        .badge-item i { color: var(--success); }
+    </style>
+</head>
+<body>
+    <div class="bg-orb bg-orb-1"></div>
+    <div class="bg-orb bg-orb-2"></div>
+    <div class="login-wrapper">
+        <div class="brand">
+            <div class="brand-icon"><i class="ph-fill ph-users-three"></i></div>
+            <h1>PeopleSync ERP</h1>
+            <p>Secure Human Resources Enterprise Platform</p>
+        </div>
+        <div class="card">
+            <!-- Login Screen -->
+            <div class="screen active" id="screenLogin">
+                <div class="screen-title">Welcome Back</div>
+                <div class="screen-subtitle">Sign in to access the HR ERP portal</div>
+                <div class="error-msg" id="loginError"><i class="ph ph-warning-circle"></i><span id="loginErrorText"></span></div>
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label>Corporate Email</label>
+                        <div class="input-wrap">
+                            <i class="ph ph-envelope"></i>
+                            <input type="email" id="loginEmail" placeholder="you@peoplesync.com" required autocomplete="email">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <div class="input-wrap">
+                            <i class="ph ph-lock-key"></i>
+                            <input type="password" id="loginPassword" placeholder="••••••••" required autocomplete="current-password">
+                        </div>
+                    </div>
+                    <div class="captcha-box" id="captchaBox">
+                        <div class="captcha-check">
+                            <input type="checkbox" id="captchaCheck" required>
+                            <span>I am not a robot</span>
+                        </div>
+                        <div class="captcha-logo"><i class="ph-fill ph-shield-check"></i></div>
+                    </div>
+                    <button type="submit" class="btn btn-primary" id="loginBtn">
+                        <i class="ph ph-sign-in"></i> Secure Login
+                    </button>
+                </form>
+                <div class="security-badges">
+                    <div class="badge-item"><i class="ph-fill ph-lock-key"></i> AES-256 Encrypted</div>
+                    <div class="badge-item"><i class="ph-fill ph-shield-check"></i> TLS 1.3</div>
+                    <div class="badge-item"><i class="ph-fill ph-timer"></i> Rate Limited</div>
+                </div>
+            </div>
+
+            <!-- MFA Screen -->
+            <div class="screen" id="screenMFA">
+                <div style="text-align:center; margin-bottom: 16px;">
+                    <i class="ph-fill ph-device-mobile-camera" style="font-size:2.5rem; color: var(--accent);"></i>
+                </div>
+                <div class="screen-title" style="text-align:center;">Two-Factor Authentication</div>
+                <div class="screen-subtitle" style="text-align:center;">Enter the 6-digit code sent to your authenticator app</div>
+                <div class="mfa-inputs">
+                    <input type="text" maxlength="1" class="mfa-digit" inputmode="numeric">
+                    <input type="text" maxlength="1" class="mfa-digit" inputmode="numeric">
+                    <input type="text" maxlength="1" class="mfa-digit" inputmode="numeric">
+                    <input type="text" maxlength="1" class="mfa-digit" inputmode="numeric">
+                    <input type="text" maxlength="1" class="mfa-digit" inputmode="numeric">
+                    <input type="text" maxlength="1" class="mfa-digit" inputmode="numeric">
+                </div>
+                <button class="btn btn-primary" id="mfaVerifyBtn"><i class="ph ph-check-circle"></i> Verify Identity</button>
+                <button class="btn btn-outline" onclick="showScreen('screenLogin')">← Back to Login</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const screens = document.querySelectorAll('.screen');
+        let tempToken = null;
+
+        function showScreen(id) {
+            screens.forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+        }
+
+        function showError(msg) {
+            const el = document.getElementById('loginError');
+            document.getElementById('loginErrorText').textContent = msg;
+            el.classList.add('show');
+        }
+
+        function hideError() { document.getElementById('loginError').classList.remove('show'); }
+
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            hideError();
+            const btn = document.getElementById('loginBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="ph ph-spinner ph-spin"></i> Authenticating...';
+
+            try {
+                const res = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: document.getElementById('loginEmail').value, password: document.getElementById('loginPassword').value })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    if (data.requiresMFA) {
+                        // MFA required — store temp token and show MFA screen
+                        tempToken = data.tempToken;
+                        showScreen('screenMFA');
+                        setTimeout(() => document.querySelector('.mfa-digit').focus(), 100);
+                    } else {
+                        // No MFA — login complete
+                        localStorage.setItem('erp_token', data.token);
+                        window.location.href = 'index.html';
+                    }
+                } else {
+                    showError(data.error || 'Login failed');
+                }
+            } catch {
+                showError('Connection error. Is the server running?');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="ph ph-sign-in"></i> Secure Login';
+            }
+        });
+
+        // MFA input auto-advance
+        document.querySelectorAll('.mfa-digit').forEach((inp, i, all) => {
+            inp.addEventListener('keyup', (e) => {
+                if (e.key >= '0' && e.key <= '9' && i < all.length - 1) all[i + 1].focus();
+                else if (e.key === 'Backspace' && i > 0) all[i - 1].focus();
+            });
+        });
+
+        document.getElementById('mfaVerifyBtn').addEventListener('click', async () => {
+            if (!tempToken) return;
+            const digits = [...document.querySelectorAll('.mfa-digit')].map(i => i.value).join('');
+            if (digits.length !== 6) { showMfaError('Please enter all 6 digits.'); return; }
+            const btn = document.getElementById('mfaVerifyBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="ph ph-spinner ph-spin"></i> Verifying...';
+            try {
+                const res = await fetch('/api/auth/mfa/validate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ tempToken, code: digits })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    localStorage.setItem('erp_token', data.token);
+                    window.location.href = 'index.html';
+                } else {
+                    showMfaError(data.error || 'Invalid code. Try again.');
+                    document.querySelectorAll('.mfa-digit').forEach(i => { i.value = ''; });
+                    document.querySelector('.mfa-digit').focus();
+                }
+            } catch {
+                showMfaError('Connection error. Is the server running?');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="ph ph-check-circle"></i> Verify Identity';
+            }
+        });
+
+        function showMfaError(msg) {
+            let el = document.getElementById('mfaError');
+            if (!el) {
+                el = document.createElement('div');
+                el.id = 'mfaError';
+                el.style.cssText = 'background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);border-radius:8px;padding:10px 14px;font-size:0.83rem;color:#fca5a5;margin-bottom:14px;display:flex;align-items:center;gap:8px;';
+                document.getElementById('mfaVerifyBtn').insertAdjacentElement('beforebegin', el);
+            }
+            el.innerHTML = '<i class="ph ph-warning-circle"></i> ' + msg;
+        }
+    </script>
+</body>
+</html>
